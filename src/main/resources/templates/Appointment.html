@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Appointment</title>
+    <style>
+        form {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<h2>All Tests</h2>
+<table id="testsTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Doctor</th>
+    </tr>
+    </thead>
+    <tbody id="testsTableBody">
+    <!-- Table rows will be dynamically populated here -->
+    </tbody>
+</table>
+
+<form id="addAppointmentForm">
+    <h2>Add New Appointment</h2>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <label for="test">Test:</label>
+    <input type="text" id="test" name="test" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+    <button type="submit">Add Appointment</button>
+</form>
+
+<script>
+    document.getElementById("addAppointmentForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent form submission
+      // Perform form validation and submission logic here
+
+      // Redirect to payment.html after successful submission
+      window.location.href = "payment.html";
+  });
+  // Function to fetch tests from the server and populate the table
+  function fetchTests() {
+      fetch('http://localhost:8080/tests')
+          .then(response => response.json())
+          .then(tests => {
+              const testsTableBody = document.getElementById('testsTableBody');
+              tests.forEach(test => {
+                  const row = document.createElement('tr');
+                  row.innerHTML = `
+                      <td>${test.id}</td>
+                      <td>${test.name}</td>
+                      <td>${test.date}</td>
+                      <td>${test.doctor}</td>
+                  `;
+                  testsTableBody.appendChild(row);
+              });
+          })
+          .catch(error => console.error('Error fetching tests:', error));
+  }
+
+  // Fetch tests when the page loads
+  fetchTests();
+
+  document.getElementById('addAppointmentForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Get form data
+      const formData = new FormData(this);
+      const appointment = {
+          name: formData.get('name'),
+          test: formData.get('test'),
+          email: formData.get('email'),
+          date: formData.get('date')
+      };
+
+      // Send a POST request to add the new appointment
+      fetch('http://localhost:8080/appointments', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(appointment)
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Failed to add appointment. Please try again.');
+          }
+          // Return a successful message
+          return 'Appointment added successfully';
+      })
+      .then(message => {
+          // Show success message
+          alert(message);
+          // Clear form inputs
+          document.getElementById('addAppointmentForm').reset();
+      })
+      .catch(error => {
+          console.error('Error adding appointment:', error);
+          alert(error.message); // Show the error message
+      });
+  });
+</script>
+
+</body>
+</html>

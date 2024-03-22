@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('images/slider-01.jpg');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-panel {
+            width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        .logo {
+            width: 100px;
+            height: auto;
+            margin: 0 auto 20px; /* Center the logo and add space below */
+        }
+        form {
+            text-align: center; /* Center form elements */
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333; /* Dark text color */
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="login-panel">
+        <img src="images/a1.png" alt="ABC Laboratory Logo" class="logo">
+        <h2>User Login</h2>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Get form data
+        const formData = new FormData(this);
+        const username = formData.get('username');
+        const password = formData.get('password');
+
+        // Perform user authentication
+        authenticateUser(username, password);
+    });
+
+    function authenticateUser(username, password) {
+        // Fetch all users from the server
+        fetch('http://localhost:8080/getusers')
+            .then(response => response.json())
+            .then(users => {
+                // Check if the username and password match any user
+                const authenticatedUser = users.find(user => user.name === username && user.password === password);
+                if (authenticatedUser) {
+                    alert('Login successful! Welcome, ' + authenticatedUser.name + '.');
+                    // Redirect to Test.html after successful login
+                    window.location.href = 'Tests.html';
+                } else {
+                    alert('Invalid username or password. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+                alert('Failed to fetch users. Please try again later.');
+            });
+    }
+</script>
+
+</body>
+</html>
