@@ -3,11 +3,10 @@ package com.LAB.ABCLab;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -44,4 +43,21 @@ public class AppointmentController {
         // return UUID.randomUUID().toString().substring(0, 6); // Generates a random UUID and takes first 6 characters
         return "APPT" + UUID.randomUUID().toString().substring(0, 6); // Sample sequential appointment number
     }
+
+    @GetMapping("/getappointments")
+    public ResponseEntity<List<Appointment>> getAllAppointments() {
+        try {
+            List<Appointment> appointments = appointmentRepo.findAll();
+            if (appointments.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(appointments, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }
+
+
